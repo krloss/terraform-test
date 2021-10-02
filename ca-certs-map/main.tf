@@ -12,3 +12,9 @@ terraform {
 }
 
 provider "tls" { }
+
+module "get_private_keys" {
+  source = "../modules/private-keys-map"
+
+  ids_list = var.ids_list
+}
