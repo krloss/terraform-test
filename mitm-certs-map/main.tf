@@ -30,4 +30,29 @@ data "tls_certificate" "get_subjects" {
 }
 locals {
   subjects_map = {for i,v in data.tls_certificate.get_subjects: var.url_list[i] => v.certificates[*].subject}
+  ca_certs_out = data.terraform_remote_state.get_ca_certs.outputs
+}
+
+module "get_private_keys" {
+  source = "../modules/private-keys-map"
+
+  ids_list = var.url_list
+
+  depends_on = [data.terraform_remote_state.get_ca_certs]
+}
+
+module "get_locally_signed_cert" {
+  source = "../modules/locally-signed-cert-request"
+
+  for_each = local.subjects_map
+
+  private_key_pem = module.get_private_keys.keys_map[each.key]
+  
+  ca_private_key_pem = local.ca_certs_out.keys_map[var.issuer]
+  ca_cert_pem = local.ca_certs_out.certs_map[var.issuer]
+  
+  subject = {
+    organization = each.key
+    common_name = replace(each.value[length(each.value) - 1],"/.*CN=([^,]+).*/","$1")
+  }
 }
