@@ -13,11 +13,6 @@ variable "key_algorithm" {
   default = "RSA"
 }
 
-variable "rsa_bits" {
-  type = number
-  default = 2048
-}
-
 variable "issuers" {
   type = map(object({
     common_name = string
