@@ -12,3 +12,11 @@ terraform {
 }
 
 provider "tls" { }
+
+data "terraform_remote_state" "get_ca_certs" {
+  backend = "local"
+
+  config = {
+    path = "../states/ca-certs/${terraform.workspace}/terraform.tfstate"
+  }
+}
