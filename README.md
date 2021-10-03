@@ -24,6 +24,8 @@ terraform apply plan-v1.out
 terraform output
 terraform show
 terraform workspace select hml
+
+terraform output -json | grep '\-\{5\}' | xargs echo -e | sed 's/^[, ]*//'
 ```
 
 ## References
